@@ -11,6 +11,7 @@
   },
   "scripts": {
     "test": "mocha --exit --recursive",
-    "compile": "npx truffle compile"
+    "compile": "npx truffle compile",
+    "flattener": "truffle-flattener"
   }
 }
