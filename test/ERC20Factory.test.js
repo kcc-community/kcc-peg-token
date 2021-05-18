@@ -8,7 +8,7 @@ const {expect} = require('chai');
 const ERC20Factory = contract.fromArtifact('ERC20Factory');
 
 describe('ERC20Factory', function () {
-    const [deployer, minter, pauser, new_root, new_miner, new_pauser, other] = accounts;
+    const [deployer, minter, pauser, blacklister, new_root, new_miner, new_pauser, new_blacklister, other] = accounts;
 
     const name = 'ERC20PegToken';
     const symbol = 'EPT';
@@ -18,6 +18,7 @@ describe('ERC20Factory', function () {
     const DEFAULT_ADMIN_ROLE = '0x00';
     const MINTER_ROLE = web3.utils.soliditySha3('MINTER_ROLE');
     const PAUSER_ROLE = web3.utils.soliditySha3('PAUSER_ROLE');
+    const BLACKLISTER_ROLE = web3.utils.soliditySha3('BLACKLISTER_ROLE');
 
     before(async function () {
         this.factory = await ERC20Factory.new({from: deployer});
@@ -26,7 +27,7 @@ describe('ERC20Factory', function () {
     describe('factory', function () {
 
         it('create token', async function () {
-            const receipt = await this.factory.createToken(name, symbol, decimals, minter, pauser, {from: deployer});
+            const receipt = await this.factory.createToken(name, symbol, decimals, minter, pauser, blacklister, {from: deployer});
 
             expectEvent(receipt, "ERC20PegTokenCreated", {symbol: symbol});
 
@@ -55,20 +56,26 @@ describe('ERC20Factory', function () {
             expect(await this.token.getRoleMember(PAUSER_ROLE, 0)).to.equal(pauser);
         });
 
+        it('check token blacklister role', async function () {
+            expect(await this.token.getRoleMemberCount(BLACKLISTER_ROLE)).to.be.bignumber.equal('1');
+            expect(await this.token.getRoleMember(BLACKLISTER_ROLE, 0)).to.equal(blacklister);
+        });
+
         it('other can not change token user', async function () {
             await expectRevert(
-                this.factory.changeTokenRole(this.tokenAddress, new_miner, new_pauser, {from: other}),
+                this.factory.changeTokenRole(this.tokenAddress, new_miner, new_pauser, new_blacklister, {from: other}),
                 'ERC20Factory: only root is allowed',
             );
         });
 
         it('deployer can change token user', async function () {
-            const receipt = await this.factory.changeTokenRole(this.tokenAddress, new_miner, new_pauser, {from: deployer});
+            const receipt = await this.factory.changeTokenRole(this.tokenAddress, new_miner, new_pauser, new_blacklister, {from: deployer});
 
             expectEvent(receipt, 'ERC20PegTokenRoleChanged', {
                 token_address: this.tokenAddress,
                 new_minter: new_miner,
-                new_pauser: new_pauser
+                new_pauser: new_pauser,
+                new_blacklister: new_blacklister
             });
         });
 
@@ -80,6 +87,11 @@ describe('ERC20Factory', function () {
         it('check new token pauser role', async function () {
             expect(await this.token.getRoleMemberCount(PAUSER_ROLE)).to.be.bignumber.equal('1');
             expect(await this.token.getRoleMember(PAUSER_ROLE, 0)).to.equal(new_pauser);
+        });
+
+        it('check new token blacklister role', async function () {
+            expect(await this.token.getRoleMemberCount(BLACKLISTER_ROLE)).to.be.bignumber.equal('1');
+            expect(await this.token.getRoleMember(BLACKLISTER_ROLE, 0)).to.equal(new_blacklister);
         });
 
         it('other can not change factory root', async function () {

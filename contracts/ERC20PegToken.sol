@@ -6,8 +6,9 @@ import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Pausable.sol";
+import "./ERC20BlackListAble.sol";
 
-contract ERC20PegToken is Context, AccessControl, ERC20Burnable, ERC20Pausable {
+contract ERC20PegToken is Context, AccessControl, ERC20Burnable, ERC20Pausable, ERC20BlackListAble {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
@@ -16,12 +17,14 @@ contract ERC20PegToken is Context, AccessControl, ERC20Burnable, ERC20Pausable {
         string memory symbol,
         uint8 decimals,
         address minter,
-        address pauser
+        address pauser,
+        address blacklister
     ) public ERC20(name, symbol) {
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
 
         _setupRole(MINTER_ROLE, minter);
         _setupRole(PAUSER_ROLE, pauser);
+        _setupRole(BLACKLISTER_ROLE, blacklister);
 
         _setupDecimals(decimals);
     }
@@ -43,5 +46,8 @@ contract ERC20PegToken is Context, AccessControl, ERC20Burnable, ERC20Pausable {
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override(ERC20, ERC20Pausable) {
         super._beforeTokenTransfer(from, to, amount);
+
+        require(!isBlackListed(from), "ERC20PegToken: invalid sender");
+        require(!isBlackListed(to), "ERC20PegToken: invalid recipient");
     }
 }
