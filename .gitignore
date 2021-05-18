@@ -105,3 +105,5 @@ dist
 
 .idea
 build
+.coverage
+coverage.json

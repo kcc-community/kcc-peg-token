@@ -5,7 +5,12 @@ import "./ERC20PegToken.sol";
 
 contract ERC20Factory {
     event ERC20PegTokenCreated(address token_address, string symbol, uint id);
-    event ERC20PegTokenRoleChanged(address token_address, address new_minter, address new_pauser, address new_blacklister);
+    event ERC20PegTokenRoleChanged(
+        address token_address,
+        address new_minter,
+        address new_pauser,
+        address new_blacklister
+    );
     event ERC20FactoryRootChanged(address new_root);
 
     address[] public tokens;
@@ -41,7 +46,12 @@ contract ERC20Factory {
         return tokens.length;
     }
 
-    function changeTokenRole(address token_address, address new_minter, address new_pauser, address new_blacklister) onlyRoot public {
+    function changeTokenRole(
+        address token_address,
+        address new_minter,
+        address new_pauser,
+        address new_blacklister
+    ) onlyRoot public {
         ERC20PegToken token = ERC20PegToken(token_address);
 
         token.revokeRole(token.MINTER_ROLE(), token.getRoleMember(token.MINTER_ROLE(), 0));

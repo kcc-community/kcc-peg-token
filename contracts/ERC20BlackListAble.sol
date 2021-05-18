@@ -18,14 +18,20 @@ abstract contract ERC20BlackListAble is Context, AccessControl {
     }
 
     function setBlackList(address _account) public virtual {
-        require(hasRole(BLACKLISTER_ROLE, _msgSender()), "ERC20PegToken: must have blacklister role to set the blacklist");
+        require(
+            hasRole(BLACKLISTER_ROLE, _msgSender()),
+            "ERC20PegToken: must have blacklister role to set the blacklist"
+        );
 
         BlackList[_account] = true;
         emit BlackListed(_account);
     }
 
     function unsetBlackList(address _account) public virtual {
-        require(hasRole(BLACKLISTER_ROLE, _msgSender()), "ERC20PegToken: must have blacklister role to unset the blacklist");
+        require(
+            hasRole(BLACKLISTER_ROLE, _msgSender()),
+            "ERC20PegToken: must have blacklister role to unset the blacklist"
+        );
 
         BlackList[_account] = false;
         emit unBlackListed(_account);
