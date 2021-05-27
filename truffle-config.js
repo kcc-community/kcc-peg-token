@@ -18,7 +18,7 @@
  *
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 // const infuraKey = "fj4jll3k.....";
 //
 // const fs = require('fs');
@@ -72,6 +72,13 @@ module.exports = {
         // network_id: 2111,   // This network is yours, in the cloud.
         // production: true    // Treats this network as if it was a public net. (default: false)
         // }
+        kcctestnet:  {
+            provider:   function () {
+                return new HDWalletProvider(process.env.MNEMONIC, "https://rpc-testnet.kcc.network");
+            },
+            network_id: 322,
+            pollingInterval: 60000
+        },
     },
 
     // Set default mocha options here, use special reporters etc.
