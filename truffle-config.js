@@ -79,6 +79,13 @@ module.exports = {
             network_id: 322,
             pollingInterval: 60000
         },
+        kccmainnet:  {
+            provider:   function () {
+                return new HDWalletProvider(process.env.MNEMONIC, "https://rpc-mainnet.kcc.network");
+            },
+            network_id: 321,
+            pollingInterval: 60000
+        },
     },
 
     // Set default mocha options here, use special reporters etc.
