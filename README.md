@@ -1,5 +1,5 @@
 # kcc-peg-token
-KuCoin Community Chain Peg Token Factory
+KCC Peg Token Factory
 
 ## Install dependency
 ```shell
